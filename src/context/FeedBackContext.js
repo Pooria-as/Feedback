@@ -1,16 +1,29 @@
-import React, { useState } from "react";
-import DATA from "../data/FeedBackData";
+import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import swal from "sweetalert";
+import axios from "axios";
+import { FEEDBACKS } from "../Utilities/Url";
 
 export const FeedbackContext = React.createContext();
 
 const FeedBackProvider = ({ children }) => {
-  const [FeedBack, setFeedBack] = useState(DATA);
+  const [FeedBack, setFeedBack] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [EditFeedBack, setEditFeedBack] = useState({
     item: {},
     editable: false,
   });
+
+  useEffect(() => {
+    const FetchData = async () => {
+      setLoading(true)
+      const data = await axios.get(FEEDBACKS);
+      setFeedBack(data.data);
+      setLoading(false)
+    };
+    FetchData();
+  }, []);
+
   const HandleDelete = (id) => {
     swal({
       title: "Are you sure?",
@@ -22,6 +35,7 @@ const FeedBackProvider = ({ children }) => {
       if (willDelete) {
         const filter = FeedBack.filter((item) => item.id !== id);
         setFeedBack(filter);
+        axios.delete(FEEDBACKS + `/${id}`);
         swal("Poof! Your FeedBack file has been deleted!", {
           icon: "success",
         });
@@ -32,7 +46,8 @@ const FeedBackProvider = ({ children }) => {
   };
 
   const HandleCreate = (data) => {
-    setFeedBack([data, ...DATA]);
+    axios.post(FEEDBACKS, data);
+    setFeedBack([data, ...FeedBack]);
     toast("success ✔");
   };
 
@@ -42,6 +57,7 @@ const FeedBackProvider = ({ children }) => {
         item.id === id ? { ...item, ...updateDATA } : item
       )
     );
+    axios.put(FEEDBACKS + `/${id}`, updateDATA);
     toast("Edited successfully ✔😎 ");
   };
 
@@ -56,6 +72,7 @@ const FeedBackProvider = ({ children }) => {
       value={{
         EditFeedBack,
         FeedBack,
+        loading,
         HandleDelete,
         HandleCreate,
         HandleEdit,

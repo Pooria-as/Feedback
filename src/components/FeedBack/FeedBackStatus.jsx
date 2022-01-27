@@ -2,14 +2,14 @@ import React, { useContext } from "react";
 import { FeedbackContext } from "../../context/FeedBackContext";
 
 const FeedBackStatus = () => {
-  const {FeedBack} = useContext(FeedbackContext);
+  const { FeedBack } = useContext(FeedbackContext);
 
   let Average =
-  FeedBack.reduce((previousValue, currentValue) => {
-      return previousValue + currentValue.rating;
+    FeedBack.reduce((pre, cur) => {
+      return pre + parseFloat(cur.rating);
     }, 0) / FeedBack.length;
 
-  Average = Average.toFixed(0).replace(/[.,]0$/, "");
+
 
   return (
     <div className="container feedback-stats">
