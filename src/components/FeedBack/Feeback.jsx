@@ -1,12 +1,15 @@
-import React from "react";
+import React, { useContext } from "react";
+import { FeedbackContext } from "../../context/FeedBackContext";
 import FeedBackItem from "./FeedBackItem";
-const Feeback = ({ feebacks,HandleDelete }) => {
-  if (!feebacks || feebacks.length === 0) return <h1>No Feed back Yet</h1>;
+const Feeback = () => {
+  const {FeedBack,HandleDelete,HandleEdit} = useContext(FeedbackContext);
 
+  if (!FeedBack || FeedBack === 0)
+    return <h1>No Feed back Yet</h1>;
   return (
     <div className="feedback-list">
-      {feebacks.map(({  ...other },i) => (
-        <FeedBackItem key={i} {...other} onDelete={HandleDelete} />
+      {FeedBack.map(({ ...other }, i) => (
+        <FeedBackItem key={i} {...other} onDelete={HandleDelete} onEdit={HandleEdit} />
       ))}
     </div>
   );

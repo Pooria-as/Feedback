@@ -1,44 +1,64 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useContext, useEffect } from "react";
 import Rating from "../Rating/Rating";
 import Card from "../Shared/Card";
+import { v4 as uuidv4 } from "uuid";
+import { FeedbackContext } from "../../context/FeedBackContext";
 
-const FeedBackForm = ({ HandleCreate }) => {
-  const [FeedBackText, setFeedBackText] = useState("");
+const FeedBackForm = () => {
+  const [Text, setText] = useState("");
   const [DissableButton, setDissableButton] = useState(true);
   const [FeedBackTextValidation, setFeedBackTextValidation] = useState("");
   const [rating, setRating] = useState(10);
-  const FeedBackTextValue = useRef("");
+  const { EditFeedBack, HandleCreate, Edit } = useContext(FeedbackContext);
 
-  const HandleChange = () => {
-    const feedback = FeedBackTextValue.current.value;
+  useEffect(() => {
+    if (EditFeedBack.editable) {
+      setText(EditFeedBack.item.text);
+      setRating(EditFeedBack.item.rating);
+    }
+  }, [EditFeedBack]);
+
+  const HandleChange = (e) => {
+    const feedback = e.target.value;
     if (feedback.length >= 10) {
       setDissableButton(false);
     } else if (feedback === "") {
       setDissableButton(true);
       setFeedBackTextValidation("your feedback most be 10 charctor");
     }
+    setText(feedback);
   };
 
- const SubmitHandler = (e)=>
-  {
-    e.preventDefault()
+  const SubmitHandler = (e) => {
+    e.preventDefault();
     const data = {
-      text :FeedBackTextValue.current.value,
-      rating:rating
+      id: uuidv4(),
+      text: Text,
+      rating: rating,
+    };
+    if (EditFeedBack.editable) {
+      const edited = {
+        text: Text,
+        rating: rating,
+      };
+      Edit(EditFeedBack.item.id,edited);
+    } else {
+      HandleCreate(data);
     }
-    HandleCreate(data)
-   
-  }
+  };
 
   return (
     <Card>
       <Rating select={(rating) => setRating(rating)} />
       <h4 className="text text-center">What's your feedback ?</h4>
+      <h4>
+        Rate : {rating}
+      </h4>
       <form onSubmit={SubmitHandler}>
         <div className="container d-flex justify-content-center input-group">
           <input
             placeholder="feedback ..."
-            ref={FeedBackTextValue}
+            value={Text}
             onChange={HandleChange}
           />
 
@@ -56,6 +76,8 @@ const FeedBackForm = ({ HandleCreate }) => {
           ""
         )}
       </form>
+
+      
     </Card>
   );
 };

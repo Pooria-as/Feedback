@@ -1,17 +1,20 @@
-import React from "react";
+import React, { useContext } from "react";
+import { FeedbackContext } from "../../context/FeedBackContext";
 
-const FeedBackStatus = ({ feebacks }) => {
+const FeedBackStatus = () => {
+  const {FeedBack} = useContext(FeedbackContext);
+
   let Average =
-    feebacks.reduce((previousValue, currentValue) => {
+  FeedBack.reduce((previousValue, currentValue) => {
       return previousValue + currentValue.rating;
-    },0) / feebacks.length;
+    }, 0) / FeedBack.length;
 
-  Average = Average.toFixed(0).replace(/[.,]0$/,'');
+  Average = Average.toFixed(0).replace(/[.,]0$/, "");
 
   return (
     <div className="container feedback-stats">
-      <h4>FeedBack Count : {feebacks.length} </h4>
-      <h4>Average FeedBack :{isNaN(Average) ? 'No Feed Back' :Average} </h4>
+      <h4>FeedBack Count : {FeedBack.length} </h4>
+      <h4>Average FeedBack :{isNaN(Average) ? "No Feed Back" : Average} </h4>
     </div>
   );
 };
